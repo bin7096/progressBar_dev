@@ -76,11 +76,23 @@ var progressBar = {
                     bool = false;
                 }
                 break;
+            case 'refund':
+                //检测传入百分比
+                if (Math.abs(parseInt(args[0])) != args[0]) {
+                    throwError.init("endPercent", "\r\nrefund() : 进度百分比必须为正整数");
+                    bool = false;
+                }
+                //验证等份数
+                if (Math.abs(parseInt(args[1])) != args[1]) {
+                    throwError.init("num", "\r\nrefund() : 等份数必须为正整数");
+                    bool = false;
+                }
+                break;
             case 'reload':
                 //验证等份数
                 for (let i = 0; i < args[0].length; i++) {
                     if (Math.abs(parseInt(args[0][i])) != args[0][i]) {
-                        throwError.init("num", "\r\nadd() : 等份数必须为正整数");
+                        throwError.init("num", "\r\nreload() : 等份数必须为正整数");
                         bool = false;
                         break;
                     }
@@ -159,7 +171,40 @@ var progressBar = {
         //返回参数集，方便下次调用
         return pbObj;
     },
+    reload : function(pbObjs /*参数集（数组）*/, nums /*等份数数组*/){
+
+        //校验参数集数组和等份数数组长度是否一致
+        if (pbObjs.length !== nums.length) {
+            throwError.init('"pbObjs" and "nums"', "长度不一致");return;
+        }
+
+        //校验参数类型
+        let bool = this.verifyType('reload', [nums]);
+        if (!bool) {
+            return;
+        }
+
+        //重新绘制多个canvas（包括底图）
+        for (let i = 0; i < pbObjs.length; i++) {
+            clearInterval(pbObjs[i]['ds']);
+            switch (pbObjs[i]['type']) {
+                case 'pureColorAnnular':
+                    let canvas      = this.initCanvas(pbObjs[i]['excricle'] * 2, pbObjs[i]['excricle'] * 2, pbObjs[i]['canvas_id']);
+                    pbObjs[i]['ds'] = this.annularStart(canvas, pbObjs[i], nums[i]);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return pbObjs;
+    },
     add : function(pbObj /*参数集*/, endPercent /*结束进度值*/, num /*等份数*/) {
+
+        //校验开始进度值是否大于结束进度值
+        if (pbObj['percent'] >= endPercent) {
+            throwError.init('endPercent', '结束进度值必须大于原有进度值');return;
+        }
 
         //校验参数类型
         let bool = this.verifyType('add', [endPercent, num]);
@@ -194,41 +239,55 @@ var progressBar = {
         return pbObj;
 
     },
-    reload : function(pbObjs /*参数集（数组）*/, nums /*等份数数组*/){
-
-        //校验参数集数组和等份数数组长度是否一致
-        if (pbObjs.length !== nums.length) {
-            throwError.init('"pbObjs" and "nums"', "长度不一致");return;
+    refund : function (pbObj /*参数集*/, endPercent /*结束进度值*/, num /*等份数*/) {
+        
+        //校验开始进度值是否小于结束进度值
+        if (pbObj['percent'] <= endPercent) {
+            throwError.init('endPercent', '结束进度值必须小于原有进度值');return;
         }
 
         //校验参数类型
-        let bool = this.verifyType('reload', [nums]);
+        let bool = this.verifyType('refund', [endPercent, num]);
         if (!bool) {
             return;
         }
 
-        //重新绘制多个canvas（包括底图）
-        for (let i = 0; i < pbObjs.length; i++) {
-            clearInterval(pbObjs[i]['ds']);
-            switch (pbObjs[i]['type']) {
-                case 'pureColorAnnular':
-                    let canvas      = this.initCanvas(pbObjs[i]['excricle'] * 2, pbObjs[i]['excricle'] * 2, pbObjs[i]['canvas_id']);
-                    pbObjs[i]['ds'] = this.annularStart(canvas, pbObjs[i], nums[i]);
-                    break;
-                default:
-                    break;
-            }
-        }
+        //重新绘制进度条（底图除外）
+        let countByPB = 1;
+        clearInterval(pbObj['ds']);
 
-        return pbObjs;
+        //开始百分比值
+        let startPercent = pbObj['percent'];
+        //减少百分比值
+        let refundPercent = pbObj['percent'] - endPercent;
+        switch (pbObj['type']) {
+            case 'pureColorAnnular':
+                let ds = setInterval(function() {
+                    if (countByPB >= num) {clearInterval(ds);}
+                    let eqNum = startPercent - (refundPercent / num * countByPB); //等份百分比值
+                    let stopAngle = 360 - (eqNum / 100 * 360);                    //结束角度
+                    // console.log(countByPB);
+                    // console.log(eqNum);
+                    // console.log(stopAngle);
+                    progressBarStart.pureCricle(pbObj, eqNum, stopAngle, true);
+                    countByPB ++;
+                }, 10);
+                pbObj['ds'] = ds;
+                break;
+            default :
+                break;
+        }
+        //覆盖参数集中的百分比
+        pbObj['percent'] = endPercent;
+        return pbObj;
     }
 }
 
 var progressBarStart = {
-    pureCricle : function (pbObj /*参数集*/, eqNum /*当前百分值*/, stopAngle /*扇形角度*/) {
+    pureCricle : function (pbObj /*参数集*/, eqNum /*当前百分值*/, stopAngle /*扇形角度*/, reloadUnder = false /*是否重绘底图*/) {
 
         //百分比扇形
-		pbObj.ctx.fillStyle = pbObj.ctx.strokeStyle = pbObj.barcolor;
+		pbObj.ctx.fillStyle = pbObj.ctx.strokeStyle = reloadUnder ? pbObj.bgcolor : pbObj.barcolor;
 		pbObj.ctx.beginPath();
 
 		pbObj.ctx.globalCompositeOperation = 'source-over';
@@ -236,32 +295,42 @@ var progressBarStart = {
 		pbObj.ctx.moveTo(pbObj.center, pbObj.center);
 		pbObj.ctx.lineTo(pbObj.center, 0);
 		
-		if (stopAngle >= 90) {
-			stopAngle -= 90;
-		}else{
-			stopAngle += 270;
-		}
-		if (stopAngle === 270) {
-			pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 0, 360 * pbObj.pi, false);
-		}else{
-			pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, false);
-		}
+		if (reloadUnder) {
+            if (stopAngle >= 270) {
+                stopAngle -= 270;
+            }else{
+                stopAngle = 270 - stopAngle;
+            }
+            console.log(stopAngle);
+            pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 0, stopAngle * pbObj.pi, true);
+        }else{
+            if (stopAngle >= 90) {
+                stopAngle -= 90;
+            }else{
+                stopAngle += 270;
+            }
+            if (stopAngle === 270) {
+                pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 0, 360 * pbObj.pi, false);
+            }else{
+                pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, false);
+            }
+        }
 		pbObj.ctx.fill();
 		pbObj.ctx.closePath();
 
-        //内圆遮盖层
-		pbObj.ctx.beginPath();
-		pbObj.ctx.globalCompositeOperation = 'destination-out';
-		pbObj.fillStyle = 'black';
-		pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.incricle, 0, pbObj.pi * 360, true);
-		pbObj.ctx.fill();
+        // //内圆遮盖层
+		// pbObj.ctx.beginPath();
+		// pbObj.ctx.globalCompositeOperation = 'destination-out';
+		// pbObj.fillStyle = 'black';
+		// pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.incricle, 0, pbObj.pi * 360, true);
+		// pbObj.ctx.fill();
 
-        //百分比文字
-		pbObj.ctx.globalCompositeOperation = 'source-over';
-		pbObj.ctx.font 	   	   = pbObj.fontsize + 'px Arial';
-		pbObj.ctx.textAlign    = 'center';
-		pbObj.ctx.textBaseline = 'middle';
-        pbObj.ctx.fillText(String(Math.ceil(eqNum)) + '%', pbObj.center, pbObj.center);
+        // //百分比文字
+		// pbObj.ctx.globalCompositeOperation = 'source-over';
+		// pbObj.ctx.font 	   	   = pbObj.fontsize + 'px Arial';
+		// pbObj.ctx.textAlign    = 'center';
+		// pbObj.ctx.textBaseline = 'middle';
+        // pbObj.ctx.fillText(String(Math.ceil(eqNum)) + '%', pbObj.center, pbObj.center);
         
         return;
     }

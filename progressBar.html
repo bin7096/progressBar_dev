@@ -43,34 +43,21 @@ var obj2;
 var obj3;
 
 var styleObj1 = obj1 = progressBar.init('pureColorAnnular', 60, 50, 'rgb(146,80,58)', '#3399FF', 'progressBar', 100);
-
-var styleObj2 = obj2 = progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
-
-var styleObj3 = obj3 = progressBar.init('pureColorAnnular', 80, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
-
-console.log(styleObj1);
-console.log(styleObj2);
-console.log(styleObj3);
-
+// var styleObj2 = obj2 = progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
+// var styleObj3 = obj3 = progressBar.init('pureColorAnnular', 80, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
 
 setTimeout(function () {
 	let addObj1 = obj1 = progressBar.add(styleObj1, 70, 100);
-	let addObj2 = obj2 = progressBar.add(styleObj2, 60, 200);
-	let addObj3 = obj3 = progressBar.add(styleObj3, 80, 300);
-	console.log(addObj1);
-	console.log(addObj2);
-	console.log(addObj3);
+	// let addObj2 = obj2 = progressBar.add(styleObj2, 60, 200);
+	// let addObj3 = obj3 = progressBar.add(styleObj3, 80, 300);
 
 	setTimeout(function () {
-		let addObj4 = obj1 = progressBar.add(addObj1, 90, 100);
-		let addObj5 = obj2 = progressBar.add(addObj2, 85, 50);
-		let addObj6 = obj3 = progressBar.add(addObj3, 100, 1000);
-		console.log(addObj4);
-		console.log(addObj5);
-		console.log(addObj6);
-	},3000);
+		let addObj4 = obj1 = progressBar.refund(addObj1, 50, 100);
+		// let addObj5 = obj2 = progressBar.refund(addObj2, 50, 50);
+		// let addObj6 = obj3 = progressBar.refund(addObj3, 60, 1000);
+	},1001);
 
-},3001);
+},1001);
 
 //页面宽高发生变化时重载
 window.onresize = function(){
@@ -79,14 +66,8 @@ window.onresize = function(){
 	}
     resize_num ++;
 
-    //根据页面变化前已加载的值传递参数
-    // progressBar.init('pureColorAnnular', 60, 50, '#CCC', '#3399FF', 'progressBar', 100);
-
-	// progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
-
-	// progressBar.init('pureColorAnnular', 80, 30, '#CCC', '#3399FF', 'progressBar3', 300);
-	
-	progressBar.reload([obj1, obj2, obj3], [100, 200, 150]);
+    //重新加载canvas
+	// progressBar.reload([obj1, obj2, obj3], [100, 200, 150]);
     
 	setTimeout(function(){
 		resize_num = 0;
