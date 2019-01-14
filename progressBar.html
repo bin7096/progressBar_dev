@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>进度条演示</title>
+</head>
+<style type="text/css">
+	*{
+		margin:0;
+		padding:0;
+	}
+	html,body{
+		height:100%;
+		background-color:#FFFFFF;
+	}
+	.progressBarDiv{
+		text-align:center;
+	}
+</style>
+<body>
+	<div class="progressBarDiv">
+		<canvas id="progressBar"></canvas>
+	</div>
+	<div class="progressBarDiv" height="300">
+		
+	</div>
+	<div class="progressBarDiv">
+		<canvas id="progressBar2"></canvas>
+	</div>
+	<div class="progressBarDiv" height="300">
+		
+	</div>
+	<div class="progressBarDiv">
+		<canvas id="progressBar3"></canvas>
+	</div>
+</body>
+<script type="text/javascript" src="progressBar.js"></script>
+<script type="text/javascript">
+
+var resize_num = 0;
+
+var styleObj1 = progressBar.init('pureColorAnnular', 60, 50, 'rgb(146,80,58)', '#3399FF', 'progressBar', 100);
+
+// var styleObj2 = progressBar.init('pureColorAnnular1', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
+
+// var styleObj3 = progressBar.init('pureColorAnnular1', 80, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
+
+console.log(styleObj1);
+// console.log(styleObj2);
+// console.log(styleObj3);
+
+
+setTimeout(function () {
+	var addObj = progressBar.add(styleObj1, 70, 100);
+	console.log(addObj);
+
+	setTimeout(function () {
+		var addObj1 = progressBar.add(addObj, 90, 100);
+		console.log(addObj1);
+	},3000);
+
+},5000);
+
+//页面宽高发生变化时重载
+window.onresize = function(){
+	if (resize_num !== 0) {
+		return;						//阻止onresize事件多次触发问题
+	}
+    resize_num ++;
+
+    //根据页面变化前已加载的值传递参数
+    progressBar.init('pureColorAnnular', 60, 50, '#CCC', '#3399FF', 'progressBar', 100);
+
+	// progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
+
+    // progressBar.init('pureColorAnnular', 80, 30, '#CCC', '#3399FF', 'progressBar3', 300);
+    
+	setTimeout(function(){
+		resize_num = 0;
+	}, 100);
+}
+
+</script>
+</html>
