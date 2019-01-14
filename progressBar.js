@@ -29,51 +29,61 @@ var progressBar = {
     type : [
         'pureColorAnnular'
     ],
-    verifyType : function (status /*当前调用状态*/, type /*进度条类型*/, widthPercent /*宽度百分比*/, percent /*进度百分比*/, bgcolor /*背景色*/, barcolor /*进度条颜色*/, num /*等份数*/) {
+    verifyType : function (status /*当前调用状态*/, args) {
         var bool = true;
         switch (status) {
             case 'init':
                 //检测类型
-                if (this.type.indexOf(arguments[1]) == -1) {
+                if (this.type.indexOf(args[0]) == -1) {
                     throwError.init("type", "\r\ninit() : 进度条类型不存在");
                     bool = false;
                 }
                 //检测宽度百分比
-                if (Math.abs(parseInt(arguments[2])) != arguments[2]) {
+                if (Math.abs(parseInt(args[1])) != args[1]) {
                     throwError.init("width", "\r\ninit() : 进度条宽度百分比必须为正整数");
                     bool = false;
                 }
                 //检测传入百分比
-                if (Math.abs(parseInt(arguments[3])) != arguments[3]) {
+                if (Math.abs(parseInt(args[2])) != args[2]) {
                     throwError.init("percent", "\r\ninit() : 进度百分比必须为正整数");
                     bool = false;
                 }
                 //验证背景色
-                if (!this.rgbReg.test(arguments[4]) && !this.colorReg.test(arguments[4])) {
+                if (!this.rgbReg.test(args[3]) && !this.colorReg.test(args[3])) {
                     throwError.init("bgcolor", "\r\ninit() : 背景颜色值有误,请使用rgb或16进制颜色值,颜色值勿带空格");
                     bool = false;
                 }
                 //验证进度条颜色值
-                if (!this.rgbReg.test(arguments[5]) && !this.colorReg.test(arguments[5])) {
+                if (!this.rgbReg.test(args[4]) && !this.colorReg.test(args[4])) {
                     throwError.init("barcolor", "\r\ninit() : 进度条颜色值有误,请使用rgb或16进制颜色值,颜色值勿带空格");
                     bool = false;
                 }
                 //验证等份数
-                if (Math.abs(parseInt(arguments[6])) != arguments[6]) {
+                if (Math.abs(parseInt(args[5])) != args[5]) {
                     throwError.init("num", "\r\ninit() : 等份数必须为正整数");
                     bool = false;
                 }
                 break;
             case 'add':
                 //检测传入百分比
-                if (Math.abs(parseInt(arguments[1])) != arguments[1]) {
+                if (Math.abs(parseInt(args[0])) != args[0]) {
                     throwError.init("endPercent", "\r\nadd() : 进度百分比必须为正整数");
                     bool = false;
                 }
                 //验证等份数
-                if (Math.abs(parseInt(arguments[2])) != arguments[2]) {
+                if (Math.abs(parseInt(args[1])) != args[1]) {
                     throwError.init("num", "\r\nadd() : 等份数必须为正整数");
                     bool = false;
+                }
+                break;
+            case 'reload':
+                //验证等份数
+                for (let i = 0; i < args[0].length; i++) {
+                    if (Math.abs(parseInt(args[0][i])) != args[0][i]) {
+                        throwError.init("num", "\r\nadd() : 等份数必须为正整数");
+                        bool = false;
+                        break;
+                    }
                 }
                 break;
             default:
@@ -81,32 +91,6 @@ var progressBar = {
                 break;
         }
         return bool;
-    },
-    init : function (type /*进度条类型*/, widthPercent /*宽度百分比*/, percent /*进度百分比*/, bgcolor /*背景色*/, barcolor /*进度条颜色*/, canvas_id /*画布ID属性*/, num /*等份数*/) {
-        
-        //验证传入参数
-        let bool = this.verifyType('init', type, widthPercent, percent, bgcolor, barcolor, num);
-        if (!bool) {
-            return;
-        }
-
-        let bodyWidth  = utils.getWindowWidth();
-        //progressBar参数集
-        let pbObj = {};
-        pbObj['percent']   = percent;       //百分值
-        pbObj['bgcolor']   = bgcolor;       //背景色
-        pbObj['barcolor']  = barcolor;      //进度条颜色
-        pbObj['canvas_id'] = canvas_id;     //画布ID
-        pbObj['width']     = bodyWidth;     //画布宽度
-        pbObj['type']      = type;          //进度条类型
-
-        switch(type){
-			case "pureColorAnnular":
-				pbObj = this.cricleStyle(pbObj, widthPercent, num);
-				break;
-        }
-        //返回参数集，方便下次调用
-        return pbObj;
     },
     initCanvas : function (w /*画布宽度*/, h /*画布高度*/, canvas_id /*画布ID属性*/) {
         let canvas = document.getElementById(canvas_id);
@@ -149,27 +133,55 @@ var progressBar = {
         }, 10);
         return ds;
     },
-    add : function(pbObj, endPercent, num) {
-
-        let bool = this.verifyType('add', endPercent, num);
+    init : function (type /*进度条类型*/, widthPercent /*宽度百分比*/, percent /*进度百分比*/, bgcolor /*背景色*/, barcolor /*进度条颜色*/, canvas_id /*画布ID属性*/, num /*等份数*/) {
+        
+        //验证传入参数
+        let bool = this.verifyType('init', [type, widthPercent, percent, bgcolor, barcolor, num]);
         if (!bool) {
             return;
         }
 
+        let bodyWidth  = utils.getWindowWidth();
+        //progressBar参数集
+        let pbObj = {};
+        pbObj['percent']   = percent;       //百分值
+        pbObj['bgcolor']   = bgcolor;       //背景色
+        pbObj['barcolor']  = barcolor;      //进度条颜色
+        pbObj['canvas_id'] = canvas_id;     //画布ID
+        pbObj['width']     = bodyWidth;     //画布宽度
+        pbObj['type']      = type;          //进度条类型
+
+        switch(type){
+			case "pureColorAnnular":
+				pbObj = this.cricleStyle(pbObj, widthPercent, num);
+				break;
+        }
+        //返回参数集，方便下次调用
+        return pbObj;
+    },
+    add : function(pbObj /*参数集*/, endPercent /*结束进度值*/, num /*等份数*/) {
+
+        //校验参数类型
+        let bool = this.verifyType('add', [endPercent, num]);
+        if (!bool) {
+            return;
+        }
+
+        //重新绘制进度条（底图除外）
         let countByPB = 1;
         clearInterval(pbObj['ds']);
 
+        //开始百分比值
         let startPercent = pbObj['percent'];
+        //增加百分比值
         let addPercent = endPercent - pbObj['percent'];
         switch (pbObj['type']) {
             case 'pureColorAnnular':
                 let ds = setInterval(function() {
                     if (countByPB >= num) {clearInterval(ds);}
-                    let eqNum = addPercent / num * countByPB + startPercent;
-                    let stopAngle = eqNum / 100 * 360;
+                    let eqNum = addPercent / num * countByPB + startPercent; //等份百分比值
+                    let stopAngle = eqNum / 100 * 360;                       //结束角度
                     progressBarStart.pureCricle(pbObj, eqNum, stopAngle);
-                    console.log(eqNum);
-                    console.log(stopAngle);
                     countByPB ++;
                 }, 10);
                 pbObj['ds'] = ds;
@@ -177,9 +189,38 @@ var progressBar = {
             default :
                 break;
         }
+        //覆盖参数集中的百分比
         pbObj['percent'] = endPercent;
         return pbObj;
 
+    },
+    reload : function(pbObjs /*参数集（数组）*/, nums /*等份数数组*/){
+
+        //校验参数集数组和等份数数组长度是否一致
+        if (pbObjs.length !== nums.length) {
+            throwError.init('"pbObjs" and "nums"', "长度不一致");return;
+        }
+
+        //校验参数类型
+        let bool = this.verifyType('reload', [nums]);
+        if (!bool) {
+            return;
+        }
+
+        //重新绘制多个canvas（包括底图）
+        for (let i = 0; i < pbObjs.length; i++) {
+            clearInterval(pbObjs[i]['ds']);
+            switch (pbObjs[i]['type']) {
+                case 'pureColorAnnular':
+                    let canvas      = this.initCanvas(pbObjs[i]['excricle'] * 2, pbObjs[i]['excricle'] * 2, pbObjs[i]['canvas_id']);
+                    pbObjs[i]['ds'] = this.annularStart(canvas, pbObjs[i], nums[i]);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return pbObjs;
     }
 }
 
