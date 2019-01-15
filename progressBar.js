@@ -266,9 +266,6 @@ var progressBar = {
                     if (countByPB >= num) {clearInterval(ds);}
                     let eqNum = startPercent - (refundPercent / num * countByPB); //等份百分比值
                     let stopAngle = 360 - (eqNum / 100 * 360);                    //结束角度
-                    // console.log(countByPB);
-                    // console.log(eqNum);
-                    // console.log(stopAngle);
                     progressBarStart.pureCricle(pbObj, eqNum, stopAngle, true);
                     countByPB ++;
                 }, 10);
@@ -284,53 +281,57 @@ var progressBar = {
 }
 
 var progressBarStart = {
-    pureCricle : function (pbObj /*参数集*/, eqNum /*当前百分值*/, stopAngle /*扇形角度*/, reloadUnder = false /*是否重绘底图*/) {
+    pureCricle : function (pbObj /*参数集*/, eqNum /*当前百分值*/, stopAngle /*扇形角度*/, isRefund = false /*是否减少*/) {
 
         //百分比扇形
-		pbObj.ctx.fillStyle = pbObj.ctx.strokeStyle = reloadUnder ? pbObj.bgcolor : pbObj.barcolor;
+		pbObj.ctx.fillStyle = pbObj.ctx.strokeStyle = isRefund ? pbObj.bgcolor : pbObj.barcolor;
 		pbObj.ctx.beginPath();
 
 		pbObj.ctx.globalCompositeOperation = 'source-over';
 
 		pbObj.ctx.moveTo(pbObj.center, pbObj.center);
-		pbObj.ctx.lineTo(pbObj.center, 0);
+        pbObj.ctx.lineTo(pbObj.center, 0);
 		
-		if (reloadUnder) {
-            if (stopAngle >= 270) {
-                stopAngle -= 270;
+		if (isRefund) {
+            if (stopAngle >= 270) { //右上角角度取结束角度与水平线角度差值（负值）
+                stopAngle = 0 - (stopAngle - 270);
             }else{
                 stopAngle = 270 - stopAngle;
             }
-            console.log(stopAngle);
-            pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 0, stopAngle * pbObj.pi, true);
+            //逆时针方向绘制背景色扇形
+            pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, true);
         }else{
-            if (stopAngle >= 90) {
+            if (stopAngle >= 90) { //右上角角度取结束角度与水平线角度差值（负值）
                 stopAngle -= 90;
             }else{
                 stopAngle += 270;
             }
+            //顺时针方向绘制进度扇形
             if (stopAngle === 270) {
                 pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 0, 360 * pbObj.pi, false);
             }else{
                 pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, false);
             }
         }
+        console.log(stopAngle);
+        // pbObj.ctx.lineTo(pbObj.center, pbObj.center);
 		pbObj.ctx.fill();
-		pbObj.ctx.closePath();
+        pbObj.ctx.closePath();
 
-        // //内圆遮盖层
-		// pbObj.ctx.beginPath();
-		// pbObj.ctx.globalCompositeOperation = 'destination-out';
-		// pbObj.fillStyle = 'black';
-		// pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.incricle, 0, pbObj.pi * 360, true);
-		// pbObj.ctx.fill();
+        //内圆遮盖层
+		pbObj.ctx.beginPath();
+		pbObj.ctx.globalCompositeOperation = 'destination-out';
+		pbObj.fillStyle = 'black';
+		pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.incricle, 0, pbObj.pi * 360, true);
+		pbObj.ctx.fill();
 
-        // //百分比文字
-		// pbObj.ctx.globalCompositeOperation = 'source-over';
-		// pbObj.ctx.font 	   	   = pbObj.fontsize + 'px Arial';
-		// pbObj.ctx.textAlign    = 'center';
-		// pbObj.ctx.textBaseline = 'middle';
-        // pbObj.ctx.fillText(String(Math.ceil(eqNum)) + '%', pbObj.center, pbObj.center);
+        //百分比文字
+		pbObj.ctx.globalCompositeOperation = 'source-over';
+		pbObj.ctx.font 	   	   = pbObj.fontsize + 'px Arial';
+		pbObj.ctx.textAlign    = 'center';
+        pbObj.ctx.textBaseline = 'middle';
+        pbObj.ctx.fillStyle    = pbObj.barcolor;
+        pbObj.ctx.fillText(String(Math.ceil(eqNum)) + '%', pbObj.center, pbObj.center);
         
         return;
     }
