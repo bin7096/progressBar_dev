@@ -120,6 +120,9 @@ var progressBar = {
         pbObj['fontsize'] = Math.floor(pbObj['excricle'] * 0.5);                   //文字大小
         pbObj['center']   = pbObj['excricle'];                                     //圆心位置（相对画布左上角，向右向下偏移多少）
         let canvas        = this.initCanvas(pbObj['excricle'] * 2, pbObj['excricle'] * 2, pbObj['canvas_id']);
+        console.log(canvas.style.width);
+        console.log(canvas.style.height);
+        console.log(window.devicePixelRatio);
         pbObj['ds']       = this.annularStart(canvas, pbObj, num);
         return pbObj;
     },
@@ -319,7 +322,6 @@ var progressBarStart = {
                 pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, false);
             }
         }
-        console.log(stopAngle);
         // pbObj.ctx.lineTo(pbObj.center, pbObj.center);
 		pbObj.ctx.fill();
         pbObj.ctx.closePath();
