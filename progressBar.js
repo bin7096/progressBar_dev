@@ -107,8 +107,11 @@ var progressBar = {
     initCanvas : function (w /*画布宽度*/, h /*画布高度*/, canvas_id /*画布ID属性*/) {
         let canvas = document.getElementById(canvas_id);
         let dpr = window.devicePixelRatio;
+        //以下解决锯齿问题
+        //样式表宽高使用实际像素
         canvas.style.width  = w + 'px';
-        canvas.style.height = h + 'px'
+        canvas.style.height = h + 'px';
+        //标签属性宽高使用实际像素*设备dpi比例
         canvas.width  = w * dpr;
         canvas.height = h * dpr;
         return canvas;
@@ -120,20 +123,18 @@ var progressBar = {
         pbObj['fontsize'] = Math.floor(pbObj['excricle'] * 0.5);                   //文字大小
         pbObj['center']   = pbObj['excricle'];                                     //圆心位置（相对画布左上角，向右向下偏移多少）
         let canvas        = this.initCanvas(pbObj['excricle'] * 2, pbObj['excricle'] * 2, pbObj['canvas_id']);
-        console.log(canvas.style.width);
-        console.log(canvas.style.height);
-        console.log(window.devicePixelRatio);
-        pbObj['ds']       = this.annularStart(canvas, pbObj, num);
-        return pbObj;
-    },
-    annularStart: function(canvas /*画布对象*/, pbObj /*参数集*/, num /*等份数*/){
 
+        
         /*canvas开始绘制*/
         let ctx = pbObj['ctx'] = canvas.getContext("2d");
-        
         ctx.translate(0.5, 0.5);  //解决canvas线条模糊问题
-
+        //按照window.devicePixelRatio输出设备dpi比例放大绘制图像（解决锯齿问题）
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+        pbObj['ds']       = this.annularStart(ctx, pbObj, num);
+        return pbObj;
+    },
+    annularStart: function(ctx /*画布对象*/, pbObj /*参数集*/, num /*等份数*/){
 
         //圆形底图
         ctx.beginPath();
@@ -162,7 +163,6 @@ var progressBar = {
         }
 
         let bodyWidth  = utils.getWindowWidth();
-        // console.log(bodyWidth);return;
         //progressBar参数集
         let pbObj = {};
         pbObj['percent']   = percent;       //百分值
