@@ -7,19 +7,11 @@ var utils = {
     },
     getWindowWidth: function() {
         //浏览器的兼容
-        var width = window.innerWidth || document.documentElement.clientWidth;
-
-        var dpr = window.devicePixelRatio ? window.devicePixelRatio : 1;
-
-        return width * dpr;
+        return window.innerWidth || document.documentElement.clientWidth;
     },
     getWindowHeight: function() {
         //浏览器的兼容
-        var height = window.innerHeight || document.documentElement.clientHeight;
-
-        var dpr = window.devicePixelRatio ? window.devicePixelRatio : 1;
-
-        return height * dpr;
+        return window.innerHeight || document.documentElement.clientHeight;
     }
 }
 
@@ -114,8 +106,11 @@ var progressBar = {
     },
     initCanvas : function (w /*画布宽度*/, h /*画布高度*/, canvas_id /*画布ID属性*/) {
         let canvas = document.getElementById(canvas_id);
-        canvas.width  = w;
-        canvas.height = h;
+        let dpr = window.devicePixelRatio;
+        canvas.style.width  = w + 'px';
+        canvas.style.height = h + 'px'
+        canvas.width  = w * dpr;
+        canvas.height = h * dpr;
         return canvas;
     },
     cricleStyle : function(pbObj /*参数集*/, widthPercent /*宽度百分比*/, num /*等份数*/) {
@@ -134,6 +129,8 @@ var progressBar = {
         let ctx = pbObj['ctx'] = canvas.getContext("2d");
         
         ctx.translate(0.5, 0.5);  //解决canvas线条模糊问题
+
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
         //圆形底图
         ctx.beginPath();

@@ -19,7 +19,7 @@
 </style>
 <body>
 	<div class="progressBarDiv">
-		<canvas id="progressBar" style="border: 1px solid red;"></canvas>
+		<canvas id="progressBar"></canvas>
 	</div>
 	<div class="progressBarDiv" height="300">
 		
@@ -38,48 +38,30 @@
 <script type="text/javascript" src="progressBar.js"></script>
 <script type="text/javascript">
 
-var vConsole = new VConsole();
+// var vConsole = new VConsole();
 
-var width = window.innerWidth;
+// var width = window.innerWidth;
 
-var dpr = window.devicePixelRatio - 0.5;
+// var dpr = window.devicePixelRatio - 0.5;
 
-var canvas = document.getElementById('progressBar');
+// var canvas = document.getElementById('progressBar');
 
-canvas.style.width = canvas.style.height = width + 'px';
+// canvas.style.width = canvas.style.height = width + 'px';
 
-canvas.width = canvas.height = width * dpr;
+// canvas.width = canvas.height = width * dpr;
 
-var center = width / 2;
-var excricle = center;
+// var center = width / 2;
+// var excricle = center;
 
-var ctx = canvas.getContext('2d');
-ctx.scale(dpr, dpr);
+// var ctx = canvas.getContext('2d');
+// ctx.translate(0.5, 0.5);
+// ctx.scale(dpr, dpr);
 
-ctx.beginPath();
-ctx.strokeStyle = ctx.fillStyle = '#000000';
-ctx.arc(center, center, excricle, 0, 360 * Math.PI / 180, true);
-ctx.fill();
-ctx.closePath();
-
-var getPixelRatio = function(context) {
-	var backingStore = context.backingStorePixelRatio ||
-		context.webkitBackingStorePixelRatio ||
-		context.mozBackingStorePixelRatio ||
-		context.msBackingStorePixelRatio ||
-		context.oBackingStorePixelRatio ||
-		context.backingStorePixelRatio || 1;
-
-	return (window.devicePixelRatio || 1) / backingStore;
-};
-
-var ratio = getPixelRatio(ctx);
-console.log('backingStorePixelRatio : ' + ctx.backingStorePixelRatio);
-console.log('webkitBackingStorePixelRatio : ' + ctx.webkitBackingStorePixelRatio);
-console.log('msBackingStorePixelRatio : ' + ctx.msBackingStorePixelRatio);
-console.log('mozBackingStorePixelRatio : ' + ctx.mozBackingStorePixelRatio);
-console.log('oBackingStorePixelRatio : ' + ctx.oBackingStorePixelRatio);
-console.log('backingStorePixelRatio : ' + ctx.backingStorePixelRatio);
+// ctx.beginPath();
+// ctx.strokeStyle = ctx.fillStyle = '#000000';
+// ctx.arc(center, center, excricle, 0, 360 * Math.PI / 180, true);
+// ctx.fill();
+// ctx.closePath();
 
 
 
@@ -89,12 +71,12 @@ console.log('backingStorePixelRatio : ' + ctx.backingStorePixelRatio);
 
 
 
-// var resize_num = 0;
+var resize_num = 0;
 
-// //用来传递参数集
-// var obj1;
-// var obj2;
-// var obj3;
+//用来传递参数集
+var obj1;
+var obj2;
+var obj3;
 
 /**
  * 初始化进度条 progressBar.init(type, widthPercent, percent, bgcolor, barcolor, canvas_id, num)
@@ -106,9 +88,9 @@ console.log('backingStorePixelRatio : ' + ctx.backingStorePixelRatio);
  * @param canvas_id    string canvas画布ID属性
  * @param num          int    等份数
  */
-// var styleObj1 = obj1 = progressBar.init('pureColorAnnular', 60, 50, 'rgb(146,80,58)', '#3399FF', 'progressBar', 100);
-// var styleObj2 = obj2 = progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
-// var styleObj3 = obj3 = progressBar.init('pureColorAnnular', 80, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
+var styleObj1 = obj1 = progressBar.init('pureColorAnnular', 60, 50, 'rgb(146,80,58)', '#3399FF', 'progressBar', 100);
+var styleObj2 = obj2 = progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
+var styleObj3 = obj3 = progressBar.init('pureColorAnnular', 80, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
 
 
 // //progressBar.js中的定时器都是10毫秒，注意按照上一步传递的等份数延时执行增加和减少方法
