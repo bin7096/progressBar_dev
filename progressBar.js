@@ -2,7 +2,7 @@ var utils = {
     getWindowSize: function() {
         return {
             width: this.getWindowWidth(),
-            height: this.getWindowHeight(),
+            height: this.getWindowHeight()
         };
     },
     getWindowWidth: function() {
