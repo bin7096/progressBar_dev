@@ -57,9 +57,9 @@ var obj3;
  * @param canvas_id    string canvas画布ID属性
  * @param num          int    等份数
  */
-var styleObj1 = obj1 = progressBar.init('pureColorAnnular', 60, 50, 'rgb(146,80,58)', '#3399FF', 'progressBar', 100);
+var styleObj1 = obj1 = progressBar.init('pureColorAnnular', 30, 50, 'rgb(146,80,58)', '#3399FF', 'progressBar', 100);
 var styleObj2 = obj2 = progressBar.init('pureColorAnnular', 60, 30, '#CCC', '#3399FF', 'progressBar2', 200);
-var styleObj3 = obj3 = progressBar.init('pureColorAnnular', 80, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
+var styleObj3 = obj3 = progressBar.init('pureColorAnnular', 90, 30, '#CCC', 'rgb(146,80,58)', 'progressBar3', 300);
 
 
 //progressBar.js中的定时器都是10毫秒，注意按照上一步传递的等份数延时执行增加和减少方法
@@ -83,7 +83,7 @@ setTimeout(function () {
 		 */
 		let addObj4 = obj1 = progressBar.refund(addObj1, 30, 100);
 		let addObj5 = obj2 = progressBar.refund(addObj2, 50, 50);
-		let addObj6 = obj3 = progressBar.refund(addObj3, 60, 1000);
+		let addObj6 = obj3 = progressBar.refund(addObj3, 60, 300);
 	},3001);
 
 },3001);
