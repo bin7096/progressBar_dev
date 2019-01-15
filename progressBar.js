@@ -7,11 +7,19 @@ var utils = {
     },
     getWindowWidth: function() {
         //浏览器的兼容
-        return window.innerWidth || document.documentElement.clientWidth;
+        var width = window.innerWidth || document.documentElement.clientWidth;
+
+        var dpr = window.devicePixelRatio ? window.devicePixelRatio : 1;
+
+        return width * dpr;
     },
     getWindowHeight: function() {
         //浏览器的兼容
-        return window.innerHeight || document.documentElement.clientHeight;
+        var height = window.innerHeight || document.documentElement.clientHeight;
+
+        var dpr = window.devicePixelRatio ? window.devicePixelRatio : 1;
+
+        return height * dpr;
     }
 }
 
@@ -154,6 +162,7 @@ var progressBar = {
         }
 
         let bodyWidth  = utils.getWindowWidth();
+        // console.log(bodyWidth);return;
         //progressBar参数集
         let pbObj = {};
         pbObj['percent']   = percent;       //百分值
@@ -313,6 +322,7 @@ var progressBarStart = {
                 pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, false);
             }
         }
+        console.log(stopAngle);
         // pbObj.ctx.lineTo(pbObj.center, pbObj.center);
 		pbObj.ctx.fill();
         pbObj.ctx.closePath();
