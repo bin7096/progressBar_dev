@@ -313,7 +313,6 @@ var progressBarStart = {
                 pbObj.ctx.arc(pbObj.center, pbObj.center, pbObj.excricle, 270 * pbObj.pi, stopAngle * pbObj.pi, false);
             }
         }
-        console.log(stopAngle);
         // pbObj.ctx.lineTo(pbObj.center, pbObj.center);
 		pbObj.ctx.fill();
         pbObj.ctx.closePath();
