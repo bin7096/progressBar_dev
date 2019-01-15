@@ -159,7 +159,7 @@ var progressBar = {
         }
 
         let bodyWidth  = utils.getWindowWidth();
-        console.log(bodyWidth);return;
+        // console.log(bodyWidth);return;
         //progressBar参数集
         let pbObj = {};
         pbObj['percent']   = percent;       //百分值
